@@ -1,0 +1,12 @@
+goroutine profile: total 2
+1 @ 0x42e3f1 0x46823d 0x4bb191 0x4bafc5 0x4b7deb 0x4cf4eb 0x4384cb 0x46ffc1
+#	0x4bb190	runtime/pprof.writeRuntimeProfile+0xb0	/usr/local/go/src/runtime/pprof/pprof.go:793
+#	0x4bafc4	runtime/pprof.writeGoroutine+0x44	/usr/local/go/src/runtime/pprof/pprof.go:752
+#	0x4b7dea	runtime/pprof.(*Profile).WriteTo+0x14a	/usr/local/go/src/runtime/pprof/pprof.go:374
+#	0x4cf4ea	main.main+0x12a				/workspaces/RLHF_production_batch/390318/turn2_modelA_sample3.go:26
+#	0x4384ca	runtime.main+0x28a			/usr/local/go/src/runtime/proc.go:272
+
+1 @ 0x468dee 0x46c272 0x4cf398 0x46ffc1
+#	0x46c271	time.Sleep+0xf1		/usr/local/go/src/runtime/time.go:285
+#	0x4cf397	main.blocking+0x17	/workspaces/RLHF_production_batch/390318/turn2_modelA_sample3.go:13
+
