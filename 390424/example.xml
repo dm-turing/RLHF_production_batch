@@ -1,0 +1,8 @@
+<person id="123">
+	<name>John Doe</name>
+	<age>30</age>
+	<address>
+		<city>New York</city>
+		<state>NY</state>
+	</address>
+</person>
