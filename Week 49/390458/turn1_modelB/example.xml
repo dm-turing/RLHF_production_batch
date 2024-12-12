@@ -1,0 +1,37 @@
+<rss>
+<channel>
+    <title>RSS feed</title>
+    <link>something.com</link>
+    <description>rss feed</description>
+    <item>
+        <title>Article 1</title>
+        <link>something.com/article1</link>
+        <description>about article 1</description>
+    </item>
+    <item>
+        <title>Article 2</title>
+        <link>something.com/article2</link>
+        <description>about article 2</description>
+    </item>
+    <item>
+        <title>Article 3</title>
+        <link>something.com/article3</link>
+        <description>about article 3</description>
+    </item>
+    <item>
+        <title>Article 4</title>
+        <link>something.com/article4</link>
+        <description>about article 4</description>
+    </item>
+    <item>
+        <title>Article 5</title>
+        <link>something.com/article5</link>
+        <description>about article 5</description>
+    </item>
+    <item>
+        <title>Article 6</title>
+        <link>something.com/article6</link>
+        <description>about article 6</description>
+   </item>
+</channel>
+</rss>
