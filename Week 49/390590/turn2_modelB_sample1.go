@@ -21,7 +21,7 @@ func producer(ch chan int) {
 		value := rand.Intn(100)
 		ch <- value
 		fmt.Printf("Producer %d sent: %d\n", i, value)
-		time.Sleep(time.Millisecond * 50)
+		time.Sleep(time.Millisecond * 75)
 	}
 }
 
@@ -41,8 +41,8 @@ func main() {
 		go producer(ch)
 	}
 
-	wg.Add(numConsumers)
 	for i := 0; i < numConsumers; i++ {
+		wg.Add(numConsumers)
 		go consumer(ch)
 	}
 
