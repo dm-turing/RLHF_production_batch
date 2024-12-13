@@ -1,15 +1,16 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"os"
+
+	"github.com/pkg/errors"
 )
 
 func openFile(filename string) error {
 	file, err := os.Open(filename)
 	if err != nil {
-		return errors.Join(err, fmt.Errorf("failed to open file %s", filename))
+		return errors.Wrap(err, fmt.Sprintf("failed to open file %s", filename))
 	}
 	defer func() {
 		if err := file.Close(); err != nil {
