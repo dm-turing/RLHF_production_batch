@@ -1,0 +1,7 @@
+
+{
+    "name": "Employee2",
+    "age": 32,
+    "email": "employee2@something.com",
+    "is_admin": true
+}
