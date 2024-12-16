@@ -4,16 +4,17 @@ import (
 	"context"
 	"fmt"
 
+	secretmanager "cloud.google.com/go/secretmanager/apiv1"
+
 	"google.golang.org/api/option"
 )
 
-func GetSecret(projectID, secretID string) (string, error) {
+func GetSecret(projectID string, secretID string) (string, error) {
 	ctx := context.Background()
-	client, err := secretmanager.NewSecretVersionsClient(ctx, option.WithCredentialsFile("path/to/service-account.json"))
+	client, err := secretmanager.NewClient(ctx, option.WithCredentialsFile("path/to/service-account.json"))
 	if err != nil {
 		return "", err
 	}
-
 	req := &secretmanager.AccessSecretVersionRequest{
 		Name: fmt.Sprintf("projects/%s/secrets/%s/versions/latest", projectID, secretID),
 	}
@@ -24,4 +25,8 @@ func GetSecret(projectID, secretID string) (string, error) {
 	}
 
 	return string(resp.Payload.Data), nil
+}
+
+func main() {
+	fmt.Println(GetSecret("projectID", "secretId"))
 }

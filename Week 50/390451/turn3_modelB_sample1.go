@@ -1,7 +1,7 @@
 package main
 
 import (
-	"context"
+	"fmt"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -21,15 +21,19 @@ func GetSecret(secretName string) (string, error) {
 		SecretId: aws.String(secretName),
 	}
 
-	resp, err := svc.GetSecretValue(context.Background(), params)
+	resp, err := svc.GetSecretValue(params)
 	if err != nil {
 		return "", err
 	}
 
-	secret, err := resp.SecretString()
+	secret := *resp.SecretString
 	if err != nil {
 		return "", err
 	}
 
 	return secret, nil
+}
+
+func main() {
+	fmt.Println(GetSecret("secretName"))
 }
