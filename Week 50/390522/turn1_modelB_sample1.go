@@ -12,7 +12,7 @@ func inspectType(value interface{}) {
 	fmt.Printf("Value: %v\n", v)
 	fmt.Printf("Type: %v\n", t)
 	fmt.Printf("Kind: %v\n", v.Kind())
-	fmt.Printf("Is nil: %+v\n", v.IsNil())
+	// fmt.Printf("Is nil: %+v\n", v.IsNil())
 }
 
 func main() {
