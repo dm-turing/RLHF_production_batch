@@ -65,7 +65,7 @@ func (tb *TokenBucket) Take() bool {
 
 func main() {
 	// Create a new token bucket with a capacity of 10 tokens and a rate of 1 token per second
-	bucket := NewTokenBucket(10, 1)
+	bucket := NewTokenBucket(5, 1)
 
 	for i := 0; i < 20; i++ {
 		if bucket.Take() {
