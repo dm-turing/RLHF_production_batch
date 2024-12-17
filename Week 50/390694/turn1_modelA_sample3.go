@@ -37,8 +37,8 @@ func AnimalFactory(animalType string) Animal {
 }
 
 type AnimalXML struct {
-	Type   string `xml:"type,attr"`
-	Animal Animal `xml:",any"`
+	Type string `xml:"type,attr"`
+	Name string `xml:",any"`
 }
 
 func main() {
@@ -65,7 +65,7 @@ func main() {
 	for _, aXML := range animalsXML.Animals {
 		animal := AnimalFactory(aXML.Type)
 		if animal != nil {
-			xml.Unmarshal([]byte(aXML.Animal), &animal) // Unmarshal into the specific type
+			xml.Unmarshal([]byte(aXML.Name), &animal) // Unmarshal into the specific type
 			animals = append(animals, animal)
 		}
 	}
