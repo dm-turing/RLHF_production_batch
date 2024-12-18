@@ -1,0 +1,13 @@
+statsd:
+  address: "localhost:8125"
+  dogstatsd_v4: true
+
+tracing:
+  enabled: true
+  service_name: "order-service"
+  environment: "production"
+
+logging:
+  enabled: true
+  service_name: "order-service"
+  environment: "production"
