@@ -1,8 +1,8 @@
-package querybuilder
+package main
 
 import (
-	"encoding/url"
 	"fmt"
+	"net/url"
 )
 
 // QueryBuilder is the main struct that builds the query.
@@ -26,4 +26,14 @@ func (qb *QueryBuilder) AddParam(key string, value interface{}) *QueryBuilder {
 // Build constructs and returns the URL query string.
 func (qb *QueryBuilder) Build() string {
 	return qb.params.Encode()
+}
+
+func main() {
+	qb := NewQueryBuilder()
+	qb.AddParam("sort", "desc")
+	qb.AddParam("limit", 10)
+	qb.AddParam("offset", 0)
+
+	queryString := qb.Build()
+	fmt.Println("Query String:", queryString)
 }

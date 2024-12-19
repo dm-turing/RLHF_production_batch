@@ -1,6 +1,7 @@
-package querybuilder
+package main
 
 import (
+	"fmt"
 	"net/url"
 )
 
@@ -35,4 +36,24 @@ func (qb *QueryBuilder) Del(param string) *QueryBuilder {
 // Build constructs the final query string.
 func (qb *QueryBuilder) Build() string {
 	return qb.values.Encode()
+}
+
+// Example usage:
+func ExampleQueryBuilder_Build() {
+	qb := New()
+
+	qb.Set("sort", "name") // Sort the results by "name"
+	qb.Add("category", "technology")
+	qb.Add("category", "culture")
+	qb.Set("limit", "10")
+
+	// Generated query string: sort=name&category=technology&category=culture&limit=10
+	query := qb.Build()
+
+	fmt.Println(query)
+	// Output: sort=name&category=technology&category=culture&limit=10
+}
+
+func main() {
+	ExampleQueryBuilder_Build()
 }
