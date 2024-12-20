@@ -1,12 +1,12 @@
 package main
 
 import (
-	"debug"
 	"fmt"
+	"runtime"
 )
 
 func main() {
-	var m debug.MemStats
-	debug.ReadMemStats(&m)
+	var m runtime.MemStats
+	runtime.ReadMemStats(&m)
 	fmt.Println("GC Pauses: ", m.PauseTotalNs) // Total nanoseconds paused for GC
 }
