@@ -1,8 +1,8 @@
 package main
 
 import (
-	"debug"
 	"fmt"
+	"runtime/debug"
 	"time"
 )
 
