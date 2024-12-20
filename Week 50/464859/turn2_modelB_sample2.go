@@ -1,4 +1,9 @@
-oackage main
+package main
+
+import (
+	"fmt"
+	"log"
+)
 
 func decorateMultipleReturnValues(f func() (int, error)) func() (int, error) {
 	return func() (int, error) {

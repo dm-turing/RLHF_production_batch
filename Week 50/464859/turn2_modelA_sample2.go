@@ -2,16 +2,17 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
 )
 
 // Logging decorator for a Reader interface method
-func LoggingDecorator(r Reader) Reader {
+func LoggingDecorator(r io.Reader) io.Reader {
 	return &loggingReader{r}
 }
 
 type loggingReader struct {
-	Reader
+	io.Reader
 }
 
 func (lr *loggingReader) Read(p []byte) (n int, err error) {
@@ -28,7 +29,7 @@ type simpleReader struct {
 }
 
 func (sr *simpleReader) Read(p []byte) (n int, err error) {
-	n, err = copy(p, sr.data)
+	n = copy(p, sr.data)
 	sr.data = sr.data[n:]
 	return n, err
 }
