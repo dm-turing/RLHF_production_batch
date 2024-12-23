@@ -2,29 +2,25 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
-	"os"
+	"net/url"
 )
 
-func readFile(filename string) ([]byte, error) {
-	file, err := os.Open(filename)
+func validateURLSyntax(urlStr string) (bool, error) {
+	_, err := url.Parse(urlStr)
 	if err != nil {
-		return nil, err
+		return false, fmt.Errorf("Invalid URL syntax: %w", err)
 	}
-	defer file.Close() // Ensure file is closed
-
-	data, err := ioutil.ReadAll(file)
-	if err != nil {
-		return nil, err
-	}
-	return data, nil
+	return true, nil
 }
 
 func main() {
-	data, err := readFile("example.txt")
+	urlStr := "http://example.com"
+	isValid, err := validateURLSyntax(urlStr)
 	if err != nil {
-		fmt.Println("Error reading file:", err)
-		return
+		fmt.Println(err)
+	} else if isValid {
+		fmt.Println("URL syntax is valid.")
+	} else {
+		fmt.Println("URL syntax is invalid.")
 	}
-	fmt.Println(string(data))
 }
