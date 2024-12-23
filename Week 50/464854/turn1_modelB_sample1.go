@@ -14,6 +14,7 @@ func main() {
 
 	// Storing large slice in an unreferenced variable
 	largeSlice := make([]int, 1e7)
+	fmt.Println(len(largeSlice))
 	defer func() {
 		// This defer statement won't be executed until the main function returns
 		// So, the large slice will remain in memory until then

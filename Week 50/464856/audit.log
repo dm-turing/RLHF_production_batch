@@ -4,3 +4,8 @@ AUDIT: 2024/12/21 04:05:16 Event: WRITE - Path: chumma.txt
 AUDIT: 2024/12/21 04:06:00 Event: CREATE - Path: test.txt
 AUDIT: 2024/12/21 04:06:12 Event: WRITE - Path: test.txt
 AUDIT: 2024/12/21 04:06:12 Event: WRITE - Path: test.txt
+AUDIT: 2024/12/23 17:02:15 Event: CREATE - Path: sample.txt
+AUDIT: 2024/12/23 17:02:15 Event: WRITE - Path: sample.txt
+AUDIT: 2024/12/23 17:02:20 Event: WRITE - Path: audit.log
+AUDIT: 2024/12/23 17:03:03 Event: REMOVE - Path: sample.txt
+AUDIT: 2024/12/23 17:03:07 Event: WRITE - Path: audit.log
