@@ -1,15 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"os"
 )
 
 func main() {
-	file, err := os.Open("example.txt")
+	file, err := os.Open("example1.txt")
 	if err != nil {
-		fmt.Println(err)
-		return
+		panic(err)
 	}
 	defer file.Close()
 	// Read or write to the file here
