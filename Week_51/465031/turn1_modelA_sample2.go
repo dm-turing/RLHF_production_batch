@@ -7,14 +7,16 @@ import (
 )
 
 func main() {
-	var counter sync.Map
+	var counterMap map[string]int = make(map[string]int)
+	var mutex sync.Mutex
 
 	// Start multiple goroutines to update the counter
 	for i := 0; i < 100; i++ {
 		go func() {
 			for j := 0; j < 1000; j++ {
-				v, _ := counter.LoadOrStore("count", 0)
-				counter.Store("count", v.(int)+1)
+				mutex.Lock()
+				counterMap["count"]++
+				mutex.Unlock()
 			}
 		}()
 	}
@@ -23,6 +25,5 @@ func main() {
 	time.Sleep(1 * time.Second)
 
 	// Retrieve and print the final count
-	count, _ := counter.Load("count")
-	fmt.Println("Total requests:", count.(int))
+	fmt.Println("Total requests:", counterMap["count"])
 }
