@@ -13,10 +13,10 @@ import (
 // Helper function to randomize 128-bit key
 func randKey(size int) []byte {
 	key := make([]byte, size)
-	_, err := io.ReadFull(rand.Reader, key)
+	/*_, err := io.ReadFull(rand.Reader, key)
 	if err != nil {
 		fmt.Println("Error reading bytes:", err)
-	}
+	}*/
 	return key
 }
 
@@ -55,17 +55,17 @@ func decrypt(ciphertext string, key []byte) ([]byte, error) {
 	}
 
 	iv := decoded[:aes.BlockSize]
-	src := decoded[aes.BlockSize:]
+	ciphertextBytes := decoded[aes.BlockSize:]
 
 	cbc := cipher.NewCBCDecrypter(block, iv)
-	cbc.CryptBlocks(src, iv)
+	cbc.CryptBlocks(ciphertextBytes, ciphertextBytes)
 
-	return src, nil
+	return ciphertextBytes, nil
 }
 
 func main() {
-	key := randKey(16) // 128-bit key
-	data := []byte("Hello, World!")
+	key := randKey(32) // 128-bit key
+	data := []byte("This is a secret message")
 	enc, err := encrypt(data, key)
 	if err != nil {
 		fmt.Println("Encryption error:", err)

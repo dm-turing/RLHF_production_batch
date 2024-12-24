@@ -45,13 +45,13 @@ func decrypt(key, ciphertext []byte) ([]byte, error) {
 	return plaintext, nil
 }
 func main() {
-	key := []byte("examplekeyexamplekey1")
+	key := make([]byte, 32)
 	text := []byte("This is a secret message!")
 	ciphertext, err := encrypt(key, text)
 	if err != nil {
 		panic(err)
 	}
-	plaintext, err := decrypt(key, ciphertext)
+	plaintext, err := decrypt(key, []byte(ciphertext))
 	if err != nil {
 		panic(err)
 	}
