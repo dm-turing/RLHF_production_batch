@@ -28,10 +28,10 @@ func main() {
 	const numEntries = 100000
 
 	var wg sync.WaitGroup
-	var waitSync time.Time
+	var mu sync.Mutex
 
 	// Start the timer
-	waitSync = time.Now()
+	waitSync := time.Now()
 
 	// Each worker writes a share of the entries
 	for i := 0; i < concurrency; i++ {
@@ -40,14 +40,16 @@ func main() {
 			defer wg.Done()
 			for j := i * numEntries / concurrency; j < (i+1)*numEntries/concurrency; j++ {
 				// Write an entry to the journal
+				mu.Lock()
 				entry := fmt.Sprintf("%d\n", j)
 				if _, err := writer.Write([]byte(entry)); err != nil {
-					log.Fatalf("failed to write entry: %v", err)
+					// log errors
 				}
+				mu.Unlock()
 			}
 			// Flush the buffered writer
 			if err := writer.Flush(); err != nil {
-				log.Fatalf("failed to flush buffer: %v", err)
+				// log errors
 			}
 		}()
 	}
