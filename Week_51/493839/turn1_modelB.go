@@ -8,9 +8,7 @@ import (
 
 func main() {
 	// Used to create new StringBuilder with size 10  and capacity 20
-	sb := strings.Builder{
-		Size: 10,
-	}
+	sb := strings.Builder{}
 
 	name := "akash"
 	age := 19
@@ -26,8 +24,8 @@ func main() {
 	sb.WriteString(" and I am ")
 	fmt.Println("Output using StringBuilder: ", sb.String())
 
-	iterativeAppend(1000000)
-	optimalAppend(1000000)
+	iterativeAppend(1000)
+	optimalAppend(1000)
 }
 
 // Iterative approach to concatenate strings
