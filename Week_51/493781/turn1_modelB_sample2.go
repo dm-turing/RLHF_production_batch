@@ -1,15 +1,15 @@
 package main
 
-import "fmt"
-
-func apply(f func(int) int, x int) int {
-	return f(x)
-}
+import (
+	"fmt"
+)
 
 func main() {
-	// Anonymous function as a callback
-	result := apply(func(n int) int {
-		return n * 2
-	}, 10)
-	fmt.Println(result) // Output: 20
+	// Define an anonymous function that takes two integers and returns their sum
+	add := func(a int, b int) int {
+		return a + b
+	}
+	// Call the anonymous function using its variable name
+	result := add(10, 20)
+	fmt.Println("Sum of 10 and 20 is", result)
 }

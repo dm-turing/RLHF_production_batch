@@ -1,12 +1,13 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
-func add(a, b int) int {
+func add(a int, b int) int {
 	return a + b
 }
-
 func main() {
 	result := add(10, 20)
-	fmt.Println(result) // Output: 30
+	fmt.Println("Sum of 10 and 20 is", result)
 }

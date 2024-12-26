@@ -5,37 +5,27 @@ import (
 	"strings"
 )
 
-// Named function filter
-func filterStrings(Strings []string, f func(string) bool) []string {
-	var filtered []string
-	for _, s := range Strings {
-		if f(s) {
-			filtered = append(filtered, s)
-		}
-	}
-	return filtered
-}
-
 func main() {
-	Strings := []string{"apple", "banana", "cherry", "orange"}
-
-	// Using a named function
+	names := []string{"Alice", "Bob", "Charlie"}
+	// Using a named function for filtering
 	isEvenLength := func(s string) bool {
 		return len(s)%2 == 0
 	}
-	evenLengthStrings := filterStrings(Strings, isEvenLength)
-	fmt.Println("Even length strings:", evenLengthStrings) // Output: Even length strings: [banana cherry]
+	evenLengthNames := filterNames(names, isEvenLength)
+	fmt.Println("Even length names:", strings.Join(evenLengthNames, ", "))
 
-	// Using an anonymous function
-	containsVowel := func(s string) bool {
-		for _, c := range s {
-
-			if strings.Contains("aeiouAEIOU", string(c)) {
-				return true
-			}
+	// Using an anonymous function for filtering
+	oddLengthNames := filterNames(names, func(s string) bool {
+		return len(s)%2 != 0
+	})
+	fmt.Println("Odd length names:", strings.Join(oddLengthNames, ", "))
+}
+func filterNames(names []string, predicate func(string) bool) []string {
+	var filteredNames []string
+	for _, name := range names {
+		if predicate(name) {
+			filteredNames = append(filteredNames, name)
 		}
-		return false
 	}
-	stringsWithVowels := filterStrings(Strings, containsVowel)
-	fmt.Println("Strings with vowels:", stringsWithVowels) // Output: Strings with vowels: [apple banana orange]
+	return filteredNames
 }
