@@ -1,15 +1,27 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"reflect"
+)
 
-func apply(f func(int) int, x int) int {
-	return f(x)
+type Data struct {
+	Secret string
 }
 
 func main() {
-	// Anonymous function as a callback
-	result := apply(func(n int) int {
-		return n * 2
-	}, 10)
-	fmt.Println(result) // Output: 20
+	data := &Data{Secret: "This is a secret"}
+	doSomething(data, createCallback(data))
+}
+
+func createCallback(data *Data) reflect.Value {
+	fn := func() {
+		fmt.Println(data.Secret)
+	}
+	return reflect.ValueOf(fn)
+}
+
+func doSomething(data interface{}, callback reflect.Value) {
+	// Some operations here...
+	callback.Call(nil)
 }
