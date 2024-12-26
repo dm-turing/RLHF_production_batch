@@ -1,0 +1,4 @@
+application:
+    name: New App Name
+env: production
+port: 8008
