@@ -6,16 +6,23 @@ import (
 	"net/http"
 )
 
-type User1 struct {
+type User struct {
 	Name string
 	Age  int
 }
 
-func ServeHTML(w http.ResponseWriter, r *http.Request) {
+var tmpl = template.Must(template.Parse(`
+<html>
+    <head><title>User Profile</title></head>
+    <body>
+        <h1>Hello, {{.Name}}!</h1>
+        <p>You are {{.Age}} years old.</p>
+    </body>
+</html>
+`))
 
-	t, _ := template.New("t").Parse("<html><head><title>User Profile</title></head><body>    <h1>Hello, {{.Name}}!</h1>    <p>You are {{.Age}} years old.</p></body></html>")
-	tmpl := template.Must(t, fmt.Errorf("%s", "Error parsing the template"))
-	user := User1{
+func ServeHTML(w http.ResponseWriter, r *http.Request) {
+	user := User{
 		Name: "Bob", // Replace with actual user input
 		Age:  25,    // Replace with actual user input
 	}
@@ -28,5 +35,5 @@ func ServeHTML(w http.ResponseWriter, r *http.Request) {
 func main() {
 	http.HandleFunc("/", ServeHTML)
 	fmt.Println("Server starting on :8080")
-	http.ListenAndServe(":8080", http.DefaultServeMux)
+	http.ListenAndServe(":8080", nil)
 }

@@ -6,17 +6,17 @@ import (
 	"net/http"
 )
 
-type User1 struct {
+type User struct {
 	Name string
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	user := User1{Name: r.URL.Query().Get("name")}
+	user := User{Name: r.URL.Query().Get("name")}
 	tmpl, err := template.ParseFiles("welcome.html")
 	if err != nil {
 		log.Fatalf("Error parsing template: %v", err)
 	}
-	err = tmpl.Execute(w, user.Name)
+	err = tmpl.Execute(w, user)
 	if err != nil {
 		log.Fatalf("Error executing template: %v", err)
 	}
