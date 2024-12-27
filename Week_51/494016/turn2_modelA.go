@@ -6,23 +6,29 @@ import (
 	"io/ioutil"
 	"os"
 	"sync"
+	"time"
 )
 
 type FaultTolerantMap struct {
-	data map[string]int
-	mu   sync.Mutex
-	file string
+	data      map[string]int
+	mu        sync.RWMutex
+	file      string
+	saveQueue chan struct{}
 }
 
 func NewFaultTolerantMap(file string) *FaultTolerantMap {
 	ftm := &FaultTolerantMap{
-		data: make(map[string]int),
-		file: file,
+		data:      make(map[string]int),
+		file:      file,
+		saveQueue: make(chan struct{}, 100),
 	}
-	// Load data from file if it exists
+
 	if _, err := os.Stat(file); err == nil {
 		ftm.loadData()
 	}
+
+	go ftm.backgroundSaver()
+
 	return ftm
 }
 
@@ -31,12 +37,12 @@ func (ftm *FaultTolerantMap) Set(key string, value int) {
 	defer ftm.mu.Unlock()
 
 	ftm.data[key] = value
-	ftm.saveData()
+	ftm.saveQueue <- struct{}{}
 }
 
 func (ftm *FaultTolerantMap) Get(key string) (int, bool) {
-	ftm.mu.Lock()
-	defer ftm.mu.Unlock()
+	ftm.mu.RLock()
+	defer ftm.mu.RUnlock()
 
 	return ftm.data[key], ftm.data[key] != 0
 }
@@ -46,7 +52,7 @@ func (ftm *FaultTolerantMap) Delete(key string) {
 	defer ftm.mu.Unlock()
 
 	delete(ftm.data, key)
-	ftm.saveData()
+	ftm.saveQueue <- struct{}{}
 }
 
 func (ftm *FaultTolerantMap) saveData() {
@@ -58,6 +64,20 @@ func (ftm *FaultTolerantMap) saveData() {
 	err = ioutil.WriteFile(ftm.file, data, 0644)
 	if err != nil {
 		fmt.Println("Error writing to file:", err)
+	}
+}
+
+func (ftm *FaultTolerantMap) backgroundSaver() {
+	ticker := time.NewTicker(time.Second)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+		case <-ftm.saveQueue:
+			ftm.saveQueue <- struct{}{} // Notify completion
+			ftm.saveData()
+		}
 	}
 }
 
