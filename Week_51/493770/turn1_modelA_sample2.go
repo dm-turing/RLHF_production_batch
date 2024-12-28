@@ -5,57 +5,44 @@ import (
 	"net/url"
 )
 
-// URLParserStrategy interface
-type URLParserStrategy interface {
-	Parse(query string) (map[string]string, error)
+// Strategy interface
+type Strategy interface {
+	Parse(query url.Values) map[string]string
 }
 
-// DefaultURLParserStrategy struct implements URLParserStrategy
-type DefaultURLParserStrategy struct {
-}
+// BasicParser implementation of the Strategy interface
+type BasicParser struct{}
 
-func (p *DefaultURLParserStrategy) Parse(query string) (map[string]string, error) {
-	u, err := url.ParseQuery(query)
-	if err != nil {
-		return nil, err
+func (p *BasicParser) Parse(query url.Values) map[string]string {
+	parsedData := make(map[string]string)
+	for key, value := range query {
+		parsedData[key] = value[0]
 	}
-	return u, nil
+	return parsedData
 }
 
-// CustomURLParserStrategy struct implements URLParserStrategy
-type CustomURLParserStrategy struct {
-}
+// EnhancedParser implementation of the Strategy interface
+type EnhancedParser struct{}
 
-func (p *CustomURLParserStrategy) Parse(query string) (map[string]string, error) {
-	return nil, fmt.Errorf("Custom parser not implemented")
-}
-
-// URLParserContext struct
-type URLParserContext struct {
-	strategy URLParserStrategy
-}
-
-func NewURLParserContext(strategy URLParserStrategy) *URLParserContext {
-	return &URLParserContext{strategy: strategy}
-}
-
-func (c *URLParserContext) SetStrategy(strategy URLParserStrategy) {
-	c.strategy = strategy
-}
-
-func (c *URLParserContext) Parse(query string) (map[string]string, error) {
-	return c.strategy.Parse(query)
+func (p *EnhancedParser) Parse(query url.Values) map[string]string {
+	parsedData := make(map[string]string)
+	for key, value := range query {
+		parsedData[key] = value[0]
+		// Enhanced logic can go here
+	}
+	return parsedData
 }
 
 func main() {
-	context := NewURLParserContext(DefaultURLParserStrategy{})
-	result, err := context.Parse("name=John&age=30&city=NewYork")
-	if err != nil {
-		fmt.Println("Error:", err)
-	} else {
-		fmt.Println("Parsed Query:", result)
+	query := url.Values{"age": []string{"25"}, "email": []string{"example@example.com"}}
+
+	strategies := []Strategy{
+		&BasicParser{},
+		&EnhancedParser{},
 	}
 
-	// Switch to a custom strategy (if implemented)
-	context.SetStrategy(CustomURLParserStrategy{})
+	for _, strategy := range strategies {
+		data := strategy.Parse(query)
+		fmt.Println(data)
+	}
 }

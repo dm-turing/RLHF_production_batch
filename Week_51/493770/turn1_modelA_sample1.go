@@ -3,50 +3,65 @@ package main
 import (
 	"fmt"
 	"net/url"
+	"strconv"
 )
 
 // Command interface
 type Command interface {
-	Execute(query string) (map[string]string, error)
+	Execute(query url.Values) error
 }
 
-// ParseCommand struct implements Command
-type ParseCommand struct {
-	urlParser URLParser
+// ParseAgeCommand implementation of the Command interface
+type ParseAgeCommand struct {
+	name string
 }
 
-func NewParseCommand(parser URLParser) *ParseCommand {
-	return &ParseCommand{urlParser: parser}
+func NewParseAgeCommand(name string) *ParseAgeCommand {
+	return &ParseAgeCommand{name: name}
 }
 
-func (c *ParseCommand) Execute(query string) (map[string]string, error) {
-	return c.urlParser.Parse(query)
-}
-
-// URLParser interface
-type URLParser interface {
-	Parse(query string) (map[string]string, error)
-}
-
-// DefaultURLParser struct implements URLParser
-type DefaultURLParser struct {
-}
-
-func (p *DefaultURLParser) Parse(query string) (map[string]string, error) {
-	u, err := url.ParseQuery(query)
-	if err != nil {
-		return nil, err
+func (c *ParseAgeCommand) Execute(query url.Values) error {
+	ageStr, ok := query["age"]
+	if !ok {
+		return fmt.Errorf("age parameter missing")
 	}
-	return u, nil
+	age, err := strconv.Atoi(ageStr[0])
+	if err != nil {
+		return err
+	}
+	fmt.Printf("%s is %d years old\n", c.name, age)
+	return nil
+}
+
+// ParseEmailCommand implementation of the Command interface
+type ParseEmailCommand struct {
+	name string
+}
+
+func NewParseEmailCommand(name string) *ParseEmailCommand {
+	return &ParseEmailCommand{name: name}
+}
+
+func (c *ParseEmailCommand) Execute(query url.Values) error {
+	email, ok := query["email"]
+	if !ok {
+		return fmt.Errorf("email parameter missing")
+	}
+	fmt.Printf("%s's email is %s\n", c.name, email[0])
+	return nil
 }
 
 func main() {
+	query := url.Values{"age": []string{"25"}, "email": []string{"example@example.com"}}
 
-	parser := NewParseCommand(DefaultURLParser{})
-	result, err := parser.Execute("name=John&age=30&city=NewYork")
-	if err != nil {
-		fmt.Println("Error:", err)
-	} else {
-		fmt.Println("Parsed Query:", result)
+	commands := []Command{
+		NewParseAgeCommand("Alice"),
+		NewParseEmailCommand("Bob"),
+	}
+
+	for _, cmd := range commands {
+		if err := cmd.Execute(query); err != nil {
+			fmt.Println(err)
+		}
 	}
 }
