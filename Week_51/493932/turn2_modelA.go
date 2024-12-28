@@ -10,7 +10,7 @@ import (
 
 // Define the data structure
 type ComplexConfig struct {
-	Host     string         `json:"host" validate:"required,nonzero"`
+	Host     string         `json:"host" validate:"required"`
 	Port     int            `json:"port" validate:"required,min=1"`
 	Services []Service      `json:"services" validate:"required"`
 	Logging  *LoggingConfig `json:"logging"`
@@ -44,7 +44,7 @@ func (c *ComplexConfig) FormatJSON() string {
 
 // Write the formatted string to a file
 func WriteConfigToFile(filename string, configString string) error {
-	err := fmt.Printf("%s", configString)
+	_, err := fmt.Printf("%s", configString)
 	if err != nil {
 		log.Fatalf("Error writing to file: %v", err)
 	}
