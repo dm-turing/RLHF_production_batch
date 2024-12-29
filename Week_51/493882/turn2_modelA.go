@@ -8,7 +8,7 @@ import (
 
 func normalizeQueryParamsWithRegex(query string) string {
 	// Define a regular expression pattern to handle & and other special characters
-	pattern := regexp.MustCompile(`(?%26)&(?%26)`)
+	pattern := regexp.MustCompile(`(?<!%26)&(?!%26)`)
 	query = pattern.ReplaceAllString(query, "&amp;")
 
 	// Handle other characters as needed
