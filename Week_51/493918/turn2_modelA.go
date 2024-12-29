@@ -8,18 +8,45 @@ import (
 
 type LRUCache struct {
 	capacity int
-	cache    map[string]*entry
+	cache    map[compositeKey]*entry
 	mu       sync.RWMutex
 	head     *entry
 	tail     *entry
 }
 
 type entry struct {
-	key      string
+	key      compositeKey
 	value    interface{}
 	prev     *entry
 	next     *entry
 	accessed time.Time
+}
+
+type compositeKey struct {
+	StringKey string
+	IntKey    int
+}
+
+func (k compositeKey) Hash() uint32 {
+	// Calculate a hash for the composite key
+	return uint32(hashString(k.StringKey) ^ uint32(hashInt(k.IntKey)))
+}
+
+func (k compositeKey) Equal(other compositeKey) bool {
+	// Compare the composite keys
+	return k.StringKey == other.StringKey && k.IntKey == other.IntKey
+}
+
+func hashString(s string) uint32 {
+	var h uint32 = 0
+	for _, c := range s {
+		h = 31*h + uint32(c)
+	}
+	return h
+}
+
+func hashInt(i int) uint32 {
+	return uint32(i)
 }
 
 func NewLRUCache(capacity int) *LRUCache {
@@ -28,11 +55,11 @@ func NewLRUCache(capacity int) *LRUCache {
 	}
 	return &LRUCache{
 		capacity: capacity,
-		cache:    make(map[string]*entry),
+		cache:    make(map[compositeKey]*entry),
 	}
 }
 
-func (c *LRUCache) Get(key string) interface{} {
+func (c *LRUCache) Get(key compositeKey) interface{} {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
@@ -43,7 +70,7 @@ func (c *LRUCache) Get(key string) interface{} {
 	return nil
 }
 
-func (c *LRUCache) Put(key string, value interface{}) {
+func (c *LRUCache) Put(key compositeKey, value interface{}) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -110,13 +137,13 @@ func (c *LRUCache) removeTail() {
 func main() {
 	cache := NewLRUCache(2)
 
-	cache.Put("key1", "value1")
-	cache.Put("key2", "value2")
+	cache.Put(compositeKey{"key1", 1}, "value1_1")
+	cache.Put(compositeKey{"key2", 2}, "value2_2")
 
-	fmt.Println("Get key1:", cache.Get("key1")) // Output: Get key1: value1
-	fmt.Println("Get key3:", cache.Get("key3")) // Output: Get key3: <nil>
+	fmt.Println("Get key1,1:", cache.Get(compositeKey{"key1", 1})) // Output: Get key1,1: value1_1
+	fmt.Println("Get key3,3:", cache.Get(compositeKey{"key3", 3})) // Output: Get key3,3: <nil>
 
-	cache.Put("key3", "value3")                 // key2 is evicted
-	fmt.Println("Get key2:", cache.Get("key2")) // Output: Get key2: <nil>
-	fmt.Println("Get key3:", cache.Get("key3")) // Output: Get key3: value3
+	cache.Put(compositeKey{"key3", 3}, "value3_3")                 // key2,2 is evicted
+	fmt.Println("Get key2,2:", cache.Get(compositeKey{"key2", 2})) // Output: Get key2,2: <nil>
+	fmt.Println("Get key3,3:", cache.Get(compositeKey{"key3", 3})) // Output: Get key3,3: value3_3
 }

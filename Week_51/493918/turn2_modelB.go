@@ -8,14 +8,14 @@ import (
 
 type LRUCache struct {
 	capacity int
-	cache    map[string]*entry
+	cache    map[[2]string]*entry
 	mu       sync.RWMutex
 	head     *entry
 	tail     *entry
 }
 
 type entry struct {
-	key      string
+	key      [2]string
 	value    interface{}
 	prev     *entry
 	next     *entry
@@ -28,38 +28,37 @@ func NewLRUCache(capacity int) *LRUCache {
 	}
 	return &LRUCache{
 		capacity: capacity,
-		cache:    make(map[string]*entry),
+		cache:    make(map[[2]string]*entry),
 	}
 }
-
-func (c *LRUCache) Get(key string) interface{} {
+func (c *LRUCache) Get(namespace, key string) interface{} {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
-
-	if entry, ok := c.cache[key]; ok {
+	compositeKey := [2]string{namespace, key}
+	if entry, ok := c.cache[compositeKey]; ok {
 		c.moveToHead(entry)
 		return entry.value
 	}
 	return nil
 }
 
-func (c *LRUCache) Put(key string, value interface{}) {
+func (c *LRUCache) Put(namespace, key string, value interface{}) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-
-	if entry, ok := c.cache[key]; ok {
+	compositeKey := [2]string{namespace, key}
+	if entry, ok := c.cache[compositeKey]; ok {
 		entry.value = value
 		c.moveToHead(entry)
 		return
 	}
 
 	newEntry := &entry{
-		key:      key,
+		key:      compositeKey,
 		value:    value,
 		accessed: time.Now(),
 	}
 
-	c.cache[key] = newEntry
+	c.cache[compositeKey] = newEntry
 	if len(c.cache) > c.capacity {
 		c.removeTail()
 	}
@@ -67,6 +66,7 @@ func (c *LRUCache) Put(key string, value interface{}) {
 	c.addToHead(newEntry)
 }
 
+// Rest of the code remains the same...
 func (c *LRUCache) moveToHead(entry *entry) {
 	c.remove(entry)
 	c.addToHead(entry)
@@ -110,13 +110,13 @@ func (c *LRUCache) removeTail() {
 func main() {
 	cache := NewLRUCache(2)
 
-	cache.Put("key1", "value1")
-	cache.Put("key2", "value2")
+	cache.Put("key1", "1", "value1")
+	cache.Put("key2", "2", "value2")
 
-	fmt.Println("Get key1:", cache.Get("key1")) // Output: Get key1: value1
-	fmt.Println("Get key3:", cache.Get("key3")) // Output: Get key3: <nil>
+	fmt.Println("Get key1:", cache.Get("key1", "1")) // Output: Get key1: value1
+	fmt.Println("Get key3:", cache.Get("key3", "3")) // Output: Get key3: <nil>
 
-	cache.Put("key3", "value3")                 // key2 is evicted
-	fmt.Println("Get key2:", cache.Get("key2")) // Output: Get key2: <nil>
-	fmt.Println("Get key3:", cache.Get("key3")) // Output: Get key3: value3
+	cache.Put("key3", "3", "value3")                 // key2 is evicted
+	fmt.Println("Get key2:", cache.Get("key2", "2")) // Output: Get key2: <nil>
+	fmt.Println("Get key3:", cache.Get("key3", "3")) // Output: Get key3: value3
 }
