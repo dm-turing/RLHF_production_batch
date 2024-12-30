@@ -1,0 +1,45 @@
+{
+	"customers": {
+	  "customer": [
+		{
+		  "id": "100",
+		  "name": "Slark",
+		  "email": "slark@dota2.com",
+		  "phone": "123-445-2311",
+		  "address": "radiant",
+		  "city": "city1",
+		  "state": "state1",
+		  "zipCode": "100000",
+		  "country": "country1",
+		  "createdAt": "12-30-2024",
+		  "updatedAt": "12-30-2024"
+		},
+		{
+		  "id": "200",
+		  "name": "Slardar",
+		  "email": "slardar@dota2.com",
+		  "phone": "123-443-2311",
+		  "address": "radiant",
+		  "city": "city2",
+		  "state": "state2",
+		  "zipCode": "200000",
+		  "country": "country2",
+		  "createdAt": "12-30-2024",
+		  "updatedAt": "12-30-2024"
+		},
+		{
+		  "id": "300",
+		  "name": "Tiny",
+		  "email": "tiny@dota2.com",
+		  "phone": "123-442-2311",
+		  "address": "radiant",
+		  "city": "city3",
+		  "state": "state3",
+		  "zipCode": "300000",
+		  "country": "country3",
+		  "createdAt": "12-30-2024",
+		  "updatedAt": "12-30-2024"
+		}
+	  ]
+	}
+  }

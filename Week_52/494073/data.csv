@@ -1,0 +1,4 @@
+id, name, email, phone, address, city, state, zipCode, country, createdAt, updatedAt
+100, Slark, slark@dota2.com, 123-445-2311, radiant, city1, state1, 100000, country1, 12-30-2024, 12-30-2024 
+200, Slardar, slardar@dota2.com, 123-445-2312, radiant, city2, state2, 200000, country2, 12-30-2024, 12-30-2024 
+300, Tiny, tiny@dota2.com, 123-445-2313, radiant, city3, state3, 300000, country3, 12-30-2024, 12-30-2024 

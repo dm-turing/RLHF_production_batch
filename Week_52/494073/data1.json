@@ -1,0 +1,15 @@
+[
+  {
+    "id": "400",
+    "name": "Mage",
+    "email": "mage@dota2@.com",
+    "phone": "123-456-7890",
+    "address": "Radiant",
+    "city": "city4",
+    "state": "state4",
+    "zipCode": "100123",
+    "country": "",
+    "createdAt": "30-12-2024",
+    "updatedAt": "30-12-2024"
+  }
+]

@@ -1,0 +1,15 @@
+<customers>
+  <customer>
+    <ID>400</ID>
+    <Name>Mage</Name>
+    <Email>mage@dota2@.com</Email>
+    <Phone>123-456-7890</Phone>
+    <Address>Radiant</Address>
+    <City>city4</City>
+    <State>state4</State>
+    <ZipCode>100123</ZipCode>
+    <Country></Country>
+    <CreatedAt>30-12-2024</CreatedAt>
+    <UpdatedAt>30-12-2024</UpdatedAt>
+  </customer>
+</customers>
