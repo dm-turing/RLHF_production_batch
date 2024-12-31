@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -20,7 +21,7 @@ func main() {
 func process(ctx context.Context) error {
 	go func() {
 		time.Sleep(2 * time.Second)
-		cancel() // Simulate some other operation that cancels the context
+		// cancel() // Simulate some other operation that cancels the context
 	}()
 
 	err := expensiveOperation(ctx)
