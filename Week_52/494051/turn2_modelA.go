@@ -17,43 +17,40 @@ func generateReportLine(data ReportData) string {
 	return fmt.Sprintf("Source: %s, Value: %d\n", data.Source, data.Value)
 }
 
-// Function to write report lines to a buffer
-func writeToReport(reportBuffer *sync.Mutex, lines []string) {
-	reportBuffer.Lock()
-	defer reportBuffer.Unlock()
-	for _, line := range lines {
-		fmt.Print(line)
-	}
-}
-
 func main() {
-	var reportBuffer sync.Mutex
-	reportLines := make(chan string)
+	var wg sync.WaitGroup
+	reportLines := make(chan string, 100) // Bounded buffer with a size of 100
 
 	// Generate some sample data concurrently
-	go generateSampleData("Source A", reportLines, 5)
-	go generateSampleData("Source B", reportLines, 3)
+	wg.Add(2)
+	go generateSampleData("Source A", reportLines, 5, &wg)
+	go generateSampleData("Source B", reportLines, 3, &wg)
 
 	// Aggregate and write report lines
 	go func() {
-		var lines []string
 		for line := range reportLines {
-			lines = append(lines, line)
+			fmt.Print(line)
 		}
-		writeToReport(&reportBuffer, lines)
+		close(reportLines)
 	}()
 
-	// Wait for all data to be processed
+	wg.Wait()
 	time.Sleep(2 * time.Second)
 }
 
 // Generate sample data and send it to a channel
-func generateSampleData(source string, dataChan chan<- string, numSamples int) {
+func generateSampleData(source string, dataChan chan<- string, numSamples int, wg *sync.WaitGroup) {
+	defer wg.Done()
 	for i := 0; i < numSamples; i++ {
 		value := i + 1
 		reportLine := generateReportLine(ReportData{Source: source, Value: value})
-		dataChan <- reportLine
+
+		// Non-blocking send
+		select {
+		case dataChan <- reportLine:
+		default:
+			// Optionally add backpressure handling or drop data
+		}
 		time.Sleep(500 * time.Millisecond)
 	}
-	close(dataChan)
 }
