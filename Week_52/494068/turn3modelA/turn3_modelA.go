@@ -121,7 +121,6 @@ func hasRole(roles ...string) bool {
 	requiredRole := roles[1:]
 	for _, role := range requiredRole {
 		if userRole == role {
-			fmt.Println(userRole, role)
 			return true
 		}
 	}
@@ -171,6 +170,5 @@ func init() {
 	salt := base64.StdEncoding.EncodeToString(make([]byte, 32)) // Generate a 256-bit salt
 	hash := sha256.New()
 	hash.Write([]byte("password" + salt)) // Hash the password with salt
-	users = append(users, User{Username: "admin", Salt: salt, Password: hex.EncodeToString(hash.Sum(nil)), Role: "admin"})
-	users = append(users, User{Username: "user1", Salt: salt, Password: hex.EncodeToString(hash.Sum(nil)), Role: "viewer"})
+	users = append(users, User{Username: "admin", Salt: salt, Password: hex.EncodeToString(hash.Sum(nil)), Role: "viewer"})
 }
