@@ -12,17 +12,37 @@ type Person struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
 	Age  int    `json:"age"`
+	City string `json:"city"`
 }
 
 var people = []Person{
-	{ID: 1, Name: "Alice", Age: 30},
-	{ID: 2, Name: "Bob", Age: 25},
-	{ID: 3, Name: "Charlie", Age: 35},
+	{ID: 1, Name: "Alice", Age: 30, City: "New York"},
+	{ID: 2, Name: "Bob", Age: 25, City: "Los Angeles"},
+	{ID: 3, Name: "Charlie", Age: 35, City: "Chicago"},
+}
+
+func personToMap(p Person) map[string]interface{} {
+	return map[string]interface{}{
+		"id":   p.ID,
+		"name": p.Name,
+		"age":  p.Age,
+		"city": p.City,
+	}
+}
+
+func peopleToMap(ps []Person) []map[string]interface{} {
+	var pm []map[string]interface{}
+	for _, p := range ps {
+		pm = append(pm, personToMap(p))
+	}
+	return pm
 }
 
 // GET endpoint to fetch all people
 func getPeople(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(people)
+	w.Header().Set("Content-Type", "application/json")
+	jsn, _ := json.MarshalIndent(peopleToMap(people), "", "  ")
+	w.Write(jsn)
 }
 
 // GET endpoint to fetch a person by ID
@@ -33,9 +53,12 @@ func getPerson(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	personID, _ := strconv.Atoi(id)
 	for _, person := range people {
-		if person.ID == parseInt(id) {
-			json.NewEncoder(w).Encode(person)
+		if person.ID == personID {
+			w.Header().Set("Content-Type", "application/json")
+			jsn, _ := json.MarshalIndent(personToMap(person), "", "  ")
+			w.Write(jsn)
 			return
 		}
 	}
@@ -54,24 +77,18 @@ func addPerson(w http.ResponseWriter, r *http.Request) {
 	newPerson.ID = len(people) + 1
 	people = append(people, newPerson)
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(newPerson)
+	w.Header().Set("Content-Type", "application/json")
+	jsn, _ := json.MarshalIndent(personToMap(newPerson), "", "  ")
+	w.Write(jsn)
 }
 
 func main() {
 	http.HandleFunc("/api/people", getPeople)
 	http.HandleFunc("/api/person", getPerson)
-	http.HandleFunc("/api/add", addPerson) // POST method overrides GET method for the same path
+	http.HandleFunc("/api/add", addPerson)
 
 	fmt.Println("Server running on http://localhost:8080")
 	if err := http.ListenAndServe(":8080", http.DefaultServeMux); err != nil {
 		log.Fatal(err)
 	}
-}
-
-func parseInt(s string) int {
-	i, err := strconv.Atoi(s)
-	if err != nil {
-		panic(err)
-	}
-	return i
 }
