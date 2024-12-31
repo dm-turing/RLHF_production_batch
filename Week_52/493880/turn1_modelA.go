@@ -39,7 +39,7 @@ func (pub *LogPublisher) Unsubscribe(observer <-chan string) {
 func (pub *LogPublisher) Notify(msg string) {
 	for _, c := range pub.observers {
 		select {
-		case c <- msg:
+		case m, _ := <-c:
 
 		default:
 			// Handle the case where the observer's channel is full or closed
@@ -54,10 +54,10 @@ type Observer interface {
 
 // ConsoleLogger struct implements the Observer interface
 type ConsoleLogger struct {
-	ch <-chan string
+	ch chan<- string
 }
 
-func NewConsoleLogger(ch <-chan string) *ConsoleLogger {
+func NewConsoleLogger(ch chan string) *ConsoleLogger {
 	return &ConsoleLogger{ch}
 }
 
@@ -65,7 +65,7 @@ func (cl *ConsoleLogger) Log(msg string) {
 	go func() {
 		select {
 		case <-cl.ch:
-			fmt.Printf("ConsoleLogger: %s\n", msg)
+			fmt.Printf("ConsoleLogger: %s\n", m)
 		default:
 			// Handle logs that can't be processed immediately
 		}
@@ -74,10 +74,10 @@ func (cl *ConsoleLogger) Log(msg string) {
 
 // FileLogger struct implements the Observer interface
 type FileLogger struct {
-	ch <-chan string
+	ch chan<- string
 }
 
-func NewFileLogger(ch <-chan string) *FileLogger {
+func NewFileLogger(ch chan string) *FileLogger {
 	return &FileLogger{ch}
 }
 
@@ -85,7 +85,7 @@ func (fl *FileLogger) Log(msg string) {
 	go func() {
 		select {
 		case <-fl.ch:
-			fmt.Printf("FileLogger: %s\n", msg)
+			fmt.Printf("FileLogger: %s\n", m)
 		default:
 			// Handle logs that can't be processed immediately
 		}
@@ -101,8 +101,8 @@ func main() {
 	fileCh := make(chan string, 1)
 
 	// Create observer instances
-	consoleLogger := NewConsoleLogger(consoleCh)
-	fileLogger := NewFileLogger(fileCh)
+	NewConsoleLogger(consoleCh)
+	NewFileLogger(fileCh)
 
 	// Subscribe observers to the publisher
 	publisher.Subscribe(consoleCh)
@@ -113,7 +113,7 @@ func main() {
 	publisher.Notify(logMsg)
 
 	// Clean up and unsubscribe observers
-	time.Sleep(time.Second) // Ensure logs are processed
+	time.Sleep(5 * time.Second) // Ensure logs are processed
 	publisher.Unsubscribe(consoleCh)
 	publisher.Unsubscribe(fileCh)
 
