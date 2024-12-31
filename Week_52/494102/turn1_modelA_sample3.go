@@ -8,14 +8,14 @@ import (
 
 func exampleFunction(ctx context.Context) {
 	// Creating a new context for each operation
-	childCtx, cancel := context.WithTimeout(ctx, 2*time.Second)
+	_, cancel := context.WithTimeout(ctx, 2*time.Second)
 	defer cancel()
 
 	fmt.Println("Function executing...")
 	time.Sleep(1 * time.Second) // Simulate work
 
 	// Another new context
-	anotherChildCtx, anotherCancel := context.WithTimeout(ctx, 2*time.Second)
+	_, anotherCancel := context.WithTimeout(ctx, 2*time.Second)
 	defer anotherCancel()
 
 	fmt.Println("Another function executing...")
