@@ -22,8 +22,8 @@ func (cm *ConcurrentMap) Set(key string, value int) {
 }
 
 func (cm *ConcurrentMap) Get(key string) (int, bool) {
-	cm.mu.Lock() // Read lock
-	defer cm.mu.Unlock()
+	cm.mu.RLock() // Read lock
+	defer cm.mu.RUnlock()
 	return cm.data[key], cm.data[key] != 0
 }
 

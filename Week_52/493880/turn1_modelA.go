@@ -8,24 +8,24 @@ import (
 
 // Subject interface representing a log publisher
 type Subject interface {
-	Subscribe(observer <-chan string)
-	Unsubscribe(observer <-chan string)
+	Subscribe(observer chan<- string)
+	Unsubscribe(observer chan<- string)
 	Notify(msg string)
 }
 
 // LogPublisher struct implements the Subject interface
 type LogPublisher struct {
-	observers []<-chan string
+	observers []chan<- string
 	wrmtx     sync.Mutex
 }
 
-func (pub *LogPublisher) Subscribe(observer <-chan string) {
+func (pub *LogPublisher) Subscribe(observer chan<- string) {
 	pub.wrmtx.Lock()
+	defer pub.wrmtx.Unlock()
 	pub.observers = append(pub.observers, observer)
-	pub.wrmtx.Unlock()
 }
 
-func (pub *LogPublisher) Unsubscribe(observer <-chan string) {
+func (pub *LogPublisher) Unsubscribe(observer chan<- string) {
 	pub.wrmtx.Lock()
 	defer pub.wrmtx.Unlock()
 	for i, c := range pub.observers {
@@ -39,11 +39,11 @@ func (pub *LogPublisher) Unsubscribe(observer <-chan string) {
 func (pub *LogPublisher) Notify(msg string) {
 	for _, c := range pub.observers {
 		select {
-		case m, _ := <-c:
-
+		case c <- msg:
 		default:
 			// Handle the case where the observer's channel is full or closed
 		}
+		close(c)
 	}
 }
 
@@ -57,19 +57,12 @@ type ConsoleLogger struct {
 	ch chan<- string
 }
 
-func NewConsoleLogger(ch chan string) *ConsoleLogger {
+func NewConsoleLogger(ch chan<- string) *ConsoleLogger {
 	return &ConsoleLogger{ch}
 }
 
 func (cl *ConsoleLogger) Log(msg string) {
-	go func() {
-		select {
-		case <-cl.ch:
-			fmt.Printf("ConsoleLogger: %s\n", m)
-		default:
-			// Handle logs that can't be processed immediately
-		}
-	}()
+	fmt.Printf("ConsoleLogger: %s\n", msg)
 }
 
 // FileLogger struct implements the Observer interface
@@ -77,19 +70,15 @@ type FileLogger struct {
 	ch chan<- string
 }
 
-func NewFileLogger(ch chan string) *FileLogger {
+func NewFileLogger(ch chan<- string) *FileLogger {
 	return &FileLogger{ch}
 }
 
 func (fl *FileLogger) Log(msg string) {
-	go func() {
-		select {
-		case <-fl.ch:
-			fmt.Printf("FileLogger: %s\n", m)
-		default:
-			// Handle logs that can't be processed immediately
-		}
-	}()
+	for m := range fl.ch {
+
+		fmt.Printf("FileLogger: %s\n", m)
+	}
 }
 
 func main() {
@@ -97,12 +86,12 @@ func main() {
 	publisher := &LogPublisher{}
 
 	// Create observer channels
-	consoleCh := make(chan string, 1)
-	fileCh := make(chan string, 1)
+	consoleCh := make(chan string)
+	fileCh := make(chan string)
 
 	// Create observer instances
-	NewConsoleLogger(consoleCh)
-	NewFileLogger(fileCh)
+	consoleLogger := NewConsoleLogger(consoleCh)
+	fileLogger := NewFileLogger(fileCh)
 
 	// Subscribe observers to the publisher
 	publisher.Subscribe(consoleCh)
@@ -110,10 +99,16 @@ func main() {
 
 	// Publish a log message
 	logMsg := "This is a log message"
-	publisher.Notify(logMsg)
+	go publisher.Notify(logMsg)
+
+	// Start logger consumers in goroutines
+	go consoleLogger.Log(logMsg)
+	go fileLogger.Log(logMsg)
+
+	// Wait for loggers to finish
+	time.Sleep(time.Second)
 
 	// Clean up and unsubscribe observers
-	time.Sleep(5 * time.Second) // Ensure logs are processed
 	publisher.Unsubscribe(consoleCh)
 	publisher.Unsubscribe(fileCh)
 
